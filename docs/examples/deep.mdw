@@ -1,0 +1,24 @@
+---
+title: 深层页面
+nav: 🕳️ 深层页面
+order: 4
+---
+
+# 深层页面
+
+这是四层嵌套页面，URL 为 `/examples/deep`。
+
+侧边栏会递归渲染所有层级，嵌套**没有上限**：
+
+- 首页（`/`）
+  - 编写指南（`/guide/`）
+    - 示例集（`/examples/`）
+      - **深层页面**（本页，`/examples/deep`）
+
+在 `docs/` 中建立任意深度的目录，导航树自动对应：
+
+```
+docs/
+└── examples/
+    └── deep.mdw    → /examples/deep
+```

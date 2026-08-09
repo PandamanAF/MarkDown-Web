@@ -1,0 +1,81 @@
+---
+title: 快速开始
+nav: ⚡ 快速开始
+order: 0
+---
+
+# 快速开始
+
+五分钟跑起你的第一个 MDW 站点。
+
+## 1. 安装
+
+需要 **Python 3.10+**：
+
+```bash
+pip install -r requirements.txt
+```
+
+依赖只有可选的 `pyyaml`、`aiohttp`（性能更好）、`pygments`（代码高亮）。
+没有它们也能运行，只是部分功能降级。
+
+## 2. 启动
+
+在项目根目录运行：
+
+```bash
+python app.py
+```
+
+打开 http://127.0.0.1:8080 即可看到默认首页。
+
+## 3. 写第一篇文章
+
+在 `docs/` 下新建一个文件（`.md` 或 `.mdw` 均可），例如
+`docs/hello.mdw`：
+
+```md
+---
+title: 你好，世界
+---
+
+# 你好，世界
+
+这是我的第一篇文章，**MDW 会自动把它变成网页**。
+```
+
+刷新浏览器，访问 http://127.0.0.1:8080/hello —— 页面已上线。
+
+## 4. 目录即路由
+
+文档目录的层级就是 URL 结构，嵌套无上限：
+
+```
+docs/
+├── index.mdw          → /
+├── hello.mdw          → /hello
+└── guide/
+    ├── index.mdw      → /guide/          （分组页）
+    └── syntax.mdw     → /guide/syntax    （子页面）
+```
+
+无需任何配置文件，`docs/` 里的文件会自动注册为路由。
+
+## 5. 配置与运行参数
+
+常用 CLI 参数：
+
+```bash
+python app.py --port 9000          # 换端口
+python app.py --host 0.0.0.0       # 局域网可访问
+python app.py --docs ./wiki        # 换文档目录
+python app.py --no-reload          # 关闭热重载
+```
+
+持久化配置写在 `config/site.yaml`，首次运行自动生成。
+
+## 下一步
+
+- 了解[语法基础](/guide/syntax)——Markdown 与 MDW 自定义块
+- 掌握[元数据与导航](/guide/metadata)——定制侧边栏
+- 查看[示例集](/examples/)——各功能开箱即用

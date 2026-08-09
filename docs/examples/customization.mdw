@@ -1,0 +1,66 @@
+---
+title: 自定义与注入变量
+nav: 🎛️ 自定义与注入变量
+order: 1
+---
+
+# 站点标题与注入变量
+
+MDW 支持不改代码即可定制站点标题，并在 mdw 文档与自定义 CSS / HTML
+静态样式文件中使用**多个、名称可自定义**的注入变量。
+
+## 自定义站点标题
+
+构造站点时传入 `site_title` 即可同时改变浏览器标签标题后缀与页脚：
+
+```python
+site = MDWSite(docs_dir="docs", site_title="我的文档站")
+```
+
+页面标题将显示为 `页面名 — 我的文档站`，页脚品牌同步更新。
+
+## 注入变量
+
+构造时传入 `variables` 字典，或运行时用 `set_var()` / `update_vars()` 修改：
+
+```python
+site = MDWSite(docs_dir="docs", variables={
+    "accent": "#6750a4",
+    "repo_url": "https://github.com/example/repo",
+    "year": "2026",
+})
+# 运行中修改
+site.set_var("accent", "#ff6d00")
+site.update_vars({"year": "2027"})
+```
+
+变量的识别格式为 `{{ 名称 }}`（名称允许字母、数字、下划线与连字符）：
+
+- **mdw 文档**：正文中的 `{{ 变量名 }}` 渲染时被替换
+- **静态 CSS / HTML 文件**：`docs/_styles/` 与 `mount_static` 挂载目录下的
+  文本文件（css / html / js / svg 等）在被请求时替换
+- **自定义块 HTML 模板**（`styles={"card": {"html": "card.html"}}`）同样生效
+
+## 内置变量
+
+无需配置即可使用：
+
+- `{{site_title}}` —— 站点标题，例如：本文档由 {{site_title}} 驱动
+- `{{brand}}` —— 侧边栏品牌名
+
+## 使用规则
+
+- 只替换**已注册**的变量，未定义的占位符原样保留；
+- 代码块与行内代码中的 `{{ 名称 }}` **不会**被替换（可放心展示语法示例）；
+- 值中的 HTML 会原样插入，可用于注入颜色、链接、统计脚本等。
+
+### 自定义 CSS 示例
+
+在 `docs/_styles/theme-custom.css` 中：
+
+```css
+/* {{site_title}} 主题色 */
+:root { --custom-accent: {{accent}}; }
+```
+
+在文档中引用：`CustomBlockExtension(styles={"theme": {"css": "theme-custom.css"}})`。

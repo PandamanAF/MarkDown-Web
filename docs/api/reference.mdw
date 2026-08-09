@@ -1,0 +1,420 @@
+---
+title: API 参考
+nav: 📄 API 参考
+order: 0
+---
+
+# MDW 管理 API —— 开发参考 {#api-reference}
+
+本文档面向客户端 / 工具开发者，描述 MDW 服务器的 HTTP 管理接口。
+示例使用 curl 与 Python（标准库）编写，语言无关，可移植到任意技术栈。
+
+## 连接信息 {#connection}
+
+| 项目 | 说明 |
+| :--- | :--- |
+| 协议 | HTTP/1.1 |
+| 数据格式 | JSON（上传支持 multipart） |
+| 编码 | UTF-8 |
+| 鉴权方式 | Bearer Token 或 URL 参数 `?token=xxx` |
+| 默认 Token | `mdw-admin`（可在 config/site.yaml 中修改） |
+
+所有 API 均在 `/api/` 路径前缀下：
+
+```
+http://<服务器地址>:<端口>/api/<端点>
+```
+
+## 鉴权 {#auth}
+
+每个请求必须携带 Token，两种方式任选其一：
+
+**方式一：HTTP Header（推荐）**
+```
+Authorization: Bearer mdw-admin
+```
+
+**方式二：URL 参数**
+```
+http://192.168.1.100:8080/api/routes?token=mdw-admin
+```
+
+### curl 示例
+
+```bash
+# Header 方式
+curl -H "Authorization: Bearer mdw-admin" http://localhost:8080/api/status
+
+# 参数方式
+curl "http://localhost:8080/api/status?token=mdw-admin"
+```
+
+### Python 示例（标准库）
+
+```python
+import urllib.request
+
+def api_get(url, token):
+    req = urllib.request.Request(
+        url,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        return resp.status, resp.read().decode("utf-8")
+
+status, body = api_get("http://localhost:8080/api/status", "mdw-admin")
+```
+
+## API 端点 {#endpoints}
+
+### 1. 获取路由列表 {#api-routes}
+
+```
+GET /api/routes
+```
+
+返回服务器上所有文档页面的路由信息。
+
+**响应**：
+
+```json
+{
+  "routes": [
+    {
+      "path": "/",
+      "title": "首页",
+      "source": "docs/index.mdw",
+      "sort_key": 0
+    },
+    {
+      "path": "/guide/styles",
+      "title": "自定义样式",
+      "source": "docs/guide/styles.mdw",
+      "sort_key": 0
+    }
+  ],
+  "total": 19
+}
+```
+
+**curl**：
+
+```bash
+curl -H "Authorization: Bearer mdw-admin" http://localhost:8080/api/routes
+```
+
+**Python**：
+
+```python
+import json
+
+status, body = api_get("http://localhost:8080/api/routes", "mdw-admin")
+data = json.loads(body)
+for route in data["routes"]:
+    print(route["path"], "→", route["title"])
+```
+
+### 2. 服务器状态 {#api-status}
+
+```
+GET /api/status
+```
+
+获取服务器的运行状态信息。
+
+**响应**：
+
+```json
+{
+  "site_title": "MDW",
+  "docs_dir": "docs",
+  "host": "0.0.0.0",
+  "port": 8080,
+  "auto_reload": true,
+  "route_count": 19,
+  "extensions": ["front_matter", "code_highlight"]
+}
+```
+
+**curl**：
+
+```bash
+curl -H "Authorization: Bearer mdw-admin" http://localhost:8080/api/status
+```
+
+### 3. 获取页面渲染结果 {#api-page}
+
+```
+GET /api/page/<路径>
+```
+
+获取指定页面的完整 HTML 渲染结果。路径为路由 path 去掉前导 `/`，
+需要 URL 编码。**空路径（`/api/page` 或 `/api/page/`）返回首页**。
+
+**示例**：
+
+```
+GET /api/page/guide/styles
+GET /api/page/%E4%B8%AD%E6%96%87%E6%B5%8B%E8%AF%95
+GET /api/page            → 首页
+```
+
+**响应**：
+
+```json
+{
+  "path": "/guide/styles",
+  "title": "自定义样式",
+  "html": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n..."
+}
+```
+
+**curl**：
+
+```bash
+# 中文路径需 URL 编码
+curl -H "Authorization: Bearer mdw-admin" \
+  "http://localhost:8080/api/page/guide/styles"
+```
+
+**Python（含中文路径编码）**：
+
+```python
+from urllib.parse import quote
+
+path = "guide/中文页面"
+url = f"http://localhost:8080/api/page/{quote(path)}"
+status, body = api_get(url, "mdw-admin")
+page = json.loads(body)
+html = page["html"]          # 完整页面 HTML
+```
+
+返回的 HTML 中 CSS/JS 使用绝对路径（如 `/static/style.css`），
+嵌入 WebView 或浏览器展示时无需改写。
+
+### 4. 下载原始文档文件 {#api-source}
+
+```
+GET /api/source/<路径>
+```
+
+获取**原始文档源文件**（`.md` / `.mdw`，含 front matter），不是渲染后的 HTML。
+响应为文件下载（`Content-Disposition: attachment`）。**空路径返回首页源文件**。
+
+**响应头**：
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/markdown; charset=utf-8
+Content-Disposition: attachment; filename="styles.mdw"
+```
+
+**curl（保存到本地）**：
+
+```bash
+curl -H "Authorization: Bearer mdw-admin" \
+  -o styles.mdw http://localhost:8080/api/source/guide/styles
+```
+
+**Python**：
+
+```python
+import urllib.request
+
+req = urllib.request.Request(
+    "http://localhost:8080/api/source/guide/styles",
+    headers={"Authorization": "Bearer mdw-admin"},
+)
+with urllib.request.urlopen(req, timeout=10) as resp:
+    # 从 Content-Disposition 取文件名
+    disp = resp.headers.get("Content-Disposition", "")
+    filename = disp.split('filename="')[1].rstrip('"') if 'filename="' in disp else "doc.mdw"
+    content = resp.read()
+    open(filename, "wb").write(content)
+```
+
+### 5. 触发热重载 {#api-reload}
+
+```
+POST /api/reload
+```
+
+修改文档文件后调用此接口，让服务器重新扫描路由和重建缓存。无需请求体。
+
+**响应**：
+
+```json
+{
+  "ok": true,
+  "message": "已重载",
+  "route_count": 19
+}
+```
+
+**curl**：
+
+```bash
+curl -X POST -H "Authorization: Bearer mdw-admin" http://localhost:8080/api/reload
+```
+
+**Python**：
+
+```python
+import urllib.request
+
+req = urllib.request.Request(
+    "http://localhost:8080/api/reload",
+    method="POST",
+    headers={"Authorization": "Bearer mdw-admin"},
+)
+with urllib.request.urlopen(req, timeout=10) as resp:
+    print(resp.read().decode("utf-8"))
+```
+
+### 6. 上传文档文件 {#api-upload}
+
+```
+POST /api/upload
+```
+
+支持两种请求体格式：
+
+**A. multipart/form-data（推荐，适合文件上传）**
+
+| 字段 | 类型 | 必填 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `file` | File | 是 | 文件内容 |
+| `path` | String | 是 | 目标路径（相对于 docs/，如 `guide/new.mdw`） |
+
+```bash
+curl -X POST -H "Authorization: Bearer mdw-admin" \
+  -F "file=@local.mdw" \
+  -F "path=guide/new.mdw" \
+  http://localhost:8080/api/upload
+```
+
+**B. application/json（适合脚本生成内容）**
+
+```json
+{
+  "file": "# 新文档\n\n这是内容",
+  "path": "guide/new.mdw"
+}
+```
+
+```bash
+curl -X POST -H "Authorization: Bearer mdw-admin" \
+  -H "Content-Type: application/json" \
+  -d '{"file": "# 新文档\n\n内容", "path": "guide/new.mdw"}' \
+  http://localhost:8080/api/upload
+```
+
+**Python（JSON 格式）**：
+
+```python
+import json
+import urllib.request
+
+payload = json.dumps({
+    "file": "# 新文档\n\n内容",
+    "path": "guide/new.mdw",
+}).encode("utf-8")
+req = urllib.request.Request(
+    "http://localhost:8080/api/upload",
+    data=payload,
+    method="POST",
+    headers={
+        "Authorization": "Bearer mdw-admin",
+        "Content-Type": "application/json",
+    },
+)
+with urllib.request.urlopen(req, timeout=10) as resp:
+    print(resp.read().decode("utf-8"))
+```
+
+**响应**：
+
+```json
+{
+  "ok": true,
+  "path": "guide/new.mdw",
+  "size": 42
+}
+```
+
+上传成功后建议调用 `POST /api/reload` 刷新路由缓存
+（本接口不会自动重载）。
+
+### 7. 删除文档文件 {#api-delete}
+
+```
+DELETE /api/page/<路径>
+```
+
+删除指定文档。**删除后若所在目录变空，自动级联删除空目录**（不会删除
+`docs/` 根目录本身）。
+
+**示例**：
+
+```
+DELETE /api/page/guide/old-page
+```
+
+**响应**：
+
+```json
+{
+  "ok": true,
+  "deleted": "/guide/old-page",
+  "removed_dirs": ["docs/guide"]   // 仅当发生目录清理时出现
+}
+```
+
+**curl**：
+
+```bash
+curl -X DELETE -H "Authorization: Bearer mdw-admin" \
+  http://localhost:8080/api/page/guide/old-page
+```
+
+**Python**：
+
+```python
+req = urllib.request.Request(
+    "http://localhost:8080/api/page/guide/old-page",
+    method="DELETE",
+    headers={"Authorization": "Bearer mdw-admin"},
+)
+with urllib.request.urlopen(req, timeout=10) as resp:
+    print(resp.read().decode("utf-8"))
+```
+
+## 错误响应 {#errors}
+
+所有错误返回统一的 JSON 格式：
+
+```json
+{
+  "error": "页面未找到",
+  "path": "/nonexistent"
+}
+```
+
+| HTTP 状态码 | 含义 |
+| :--- | :--- |
+| 200 | 成功 |
+| 400 | 请求参数错误 |
+| 401 | 鉴权失败（Token 错误或缺失） |
+| 403 | 路径越界（安全限制） |
+| 404 | 页面或端点不存在 |
+| 500 | 服务器内部错误 |
+
+## 注意事项 {#notes}
+
+1. 上传文件后需调用 `POST /api/reload` 刷新路由缓存
+2. 中文路径需 URL 编码后再请求
+3. `/api/` 前缀下的非 API 路径（如 `/api/reference`）会渲染
+   `docs/api/` 目录下的文档页面，可用于访问 API 文档本身
+4. Token 建议在生产环境中修改为强密码
+5. 接口不支持 CORS，跨域调用请在反向代理层配置
+6. 删除操作会级联清理空目录，删除前请确认

@@ -1,0 +1,63 @@
+---
+title: 模板与主题定制
+nav: 🧩 模板与主题
+order: 4
+---
+
+# 模板与主题定制
+
+MDW 将页面的固定结构（头部、侧边栏、汉堡按钮、导航节点、页脚、目录列表、
+错误页）拆分为**外部模板文件**，存放在 `mdw/templates/` 下，代码只负责
+组装数据并引用渲染。想改页面外观，无需改动 Python 代码。
+
+## 内置模板一览
+
+| 模板文件            | 作用 |
+| ------------------- | ---- |
+| `base.html`         | 完整页面骨架 |
+| `head.html`         | `<head>` 头部（标题/样式/脚本） |
+| `sidenav_btn.html`  | 汉堡按钮（三条横线） |
+| `nav.html`          | 侧边栏外壳（品牌/关闭按钮/树容器） |
+| `nav_item.html`     | 单个导航节点（含递归子树） |
+| `footer.html`       | 页脚 |
+| `dir_listing.html`  | 无 index 目录的列表页 |
+| `error.html`        | 渲染错误页 |
+
+模板使用 `{{ 变量名 }}` 占位符，例如 `{{title}}`、`{{nav_tree}}`。
+
+## 自定义模板（覆盖内置）
+
+启动时传入自定义模板目录，放入与内置**同名**的文件即可覆盖：
+
+```python
+site = MDWSite(docs_dir="docs", template_dir="templates")
+```
+
+```
+templates/            ← 你的模板目录（不存在同名文件时自动用内置）
+├── head.html         ← 覆盖 <head>，比如换一套字体、加统计脚本
+├── footer.html       ← 覆盖页脚
+└── nav_item.html     ← 覆盖导航节点的结构
+```
+
+## 换主题 / 换脚本
+
+```python
+site = MDWSite(
+    docs_dir="docs",
+    brand="我的文档站",     # 侧边栏品牌名
+    style_file="my-theme.css",  # static/ 下的主题样式（默认 style.css）
+    script_file="app.js",       # static/ 下的前端脚本
+)
+```
+
+把自定义 CSS 放进 `static/` 即可整体换肤；主题支持浅色/暗色自动适配，
+移动端抽屉式侧边栏与打印样式也已内置。
+
+## 常见自定义示例
+
+- **头部追加脚本**：在 `templates/head.html` 中保留原有内容，追加
+  `<script src="/static/analytics.js" defer></script>`。
+- **页脚版权信息**：改写 `templates/footer.html`。
+- **导航节点样式**：改写 `templates/nav_item.html`，变量有 `kind`
+  （group/leaf）、`extra_cls`、`data_attr`、`label`、`toggle`、`tree_wrap`。

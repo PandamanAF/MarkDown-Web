@@ -1,0 +1,42 @@
+---
+title: 媒体资源
+nav: 🖼️ 媒体资源
+order: 2
+---
+
+# 图片、视频与音频
+
+MDW 的 Markdown 解析器支持直接引用图片、视频与音频资源，语法与
+标准 Markdown 图片一致，按**文件扩展名**自动识别媒体类型：
+
+| 写法 | 渲染结果 |
+| --- | --- |
+| `![alt](xxx.png)` | `<img>` 图片（惰性加载） |
+| `![alt](xxx.mp4)` | `<video controls>` 播放器 |
+| `![alt](xxx.mp3)` | `<audio controls>` 播放器 |
+
+## 静态资源挂载
+
+资源文件放在 `docs/` 目录下即可直接访问（建议统一放入 `docs/_assets/`，
+`_` 前缀的目录不会注册为路由）：
+
+- `docs/_assets/demo.svg` → 通过 `/_assets/demo.svg` 访问
+- 也可以相对引用，例如在 `/guide/...` 页面写 `../_assets/demo.svg`
+
+此外支持程序化挂载任意目录：
+
+```python
+site.mount_static("/media", "docs/media")   # /media/xxx.png 可访问
+```
+
+## 图片
+
+![MDW 示例图片](/_assets/demo.svg "MDW 演示 SVG")
+
+## 视频
+
+![示例视频](https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4 "MDN 示例视频")
+
+## 音频
+
+![示例音频](https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3 "MDN 示例音频")

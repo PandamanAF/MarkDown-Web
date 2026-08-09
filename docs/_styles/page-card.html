@@ -1,0 +1,13 @@
+<!-- 页面跳转卡片 —— Material Design 3 风格
+     变量：url（跳转目标）、title（标题）、icon（图标/紧凑模式可省略）、accent（强调色）
+           align（对齐方式：left | center | right，默认 right）
+           compact（紧凑模式：设 "1" 启用，无图标、变小变扁） -->
+<div class="mdw-page-card" data-align="{{align}}" data-compact="{{compact}}">
+  <a class="mdw-page-card-link" href="{{url}}" aria-label="{{title}}"></a>
+  <div class="mdw-page-card-icon">{{icon}}</div>
+  <div class="mdw-page-card-text">
+    <div class="mdw-page-card-title">{{title}}</div>
+    <div class="mdw-page-card-desc">{{content}}</div>
+  </div>
+  <span class="mdw-page-card-arrow" aria-hidden="true">→</span>
+</div>

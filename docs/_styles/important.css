@@ -1,0 +1,20 @@
+/* 外部自定义样式 —— 由 docs/_styles/important.css 提供 */
+.mdw-block.mdw-important {
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-left: 4px solid #f97316;
+  color: #7c2d12;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+.mdw-block.mdw-important strong { color: #c2410c; }
+
+@media (prefers-color-scheme: dark) {
+  .mdw-block.mdw-important {
+    background: #2b1a0e;
+    border-color: #7c4a1e;
+    border-left-color: #f97316;
+    color: #fdba74;
+  }
+  .mdw-block.mdw-important strong { color: #fb923c; }
+}

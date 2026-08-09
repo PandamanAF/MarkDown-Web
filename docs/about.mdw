@@ -1,0 +1,34 @@
+---
+title: 关于
+nav: ℹ️ 关于
+order: 99
+---
+
+# 关于 MDW
+
+MDW 是一个轻量级的类 MD 文档建站框架，目标是让文档即网站。
+
+## 设计理念
+
+- **零配置** — 文档目录结构即为路由
+- **元数据优先** — 用少量元数据即可重构侧边栏，无需写代码
+- **可扩展** — 通过 Extension 系统可自定义一切
+- **热重载** — 所见即所得
+- **自包含** — 无外部框架依赖（可选 aiohttp 提升性能）
+
+## 技术栈
+
+- Python 3.10+
+- 内置 HTTP 服务器（stdlib）/ 可选 aiohttp
+- 内置 Markdown 解析器 / 可选 Python-Markdown
+
+## 文档导航
+
+- [⚡ 快速开始](/guide/quickstart)
+- [📖 编写指南](/guide/)
+- [🧪 示例集](/examples/)
+- [🤖 管理 API](/api/)
+
+## 许可证
+
+MIT License

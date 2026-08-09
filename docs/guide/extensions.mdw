@@ -1,0 +1,86 @@
+---
+title: 扩展开发
+nav: 🔌 扩展开发
+order: 5
+---
+
+# 扩展开发
+
+MDW 通过扩展（Extension）系统提供自定义能力。内置扩展包括：
+
+| 扩展 | 作用 |
+| ---- | ---- |
+| `FrontMatterExtension` | 解析文档头部 `---` 元数据 |
+| `CustomBlockExtension` | `:::` 自定义块语法 |
+| `CodeHighlightExtension` | 代码块高亮包装 |
+| `TemplateExtension` | 模板变量替换 |
+
+## 注册扩展
+
+在 `app.py` 中通过 `site.use()` 注册：
+
+```python
+from mdw import MDWSite
+from mdw.extensions import FrontMatterExtension, CustomBlockExtension
+
+site = MDWSite(docs_dir="docs")
+site.use(FrontMatterExtension())
+site.use(CustomBlockExtension(markers=(":::", "[[[")))
+```
+
+## 编写自定义扩展
+
+继承 `Extension` 基类，实现对应钩子：
+
+```python
+from mdw.extensions import Extension
+
+class MyExtension(Extension):
+    name = "my_extension"
+
+    def transform_source(self, source: str, meta: dict) -> str:
+        """渲染前对源文本做预处理。"""
+        return source.replace("{{today}}", "2026-08-09")
+
+    def post_render(self, html: str, meta: dict) -> str:
+        """渲染后对 HTML 做后处理。"""
+        return html.replace("</body>", "<script src='/static/my.js'></script></body>")
+```
+
+注册使用：
+
+```python
+site.use(MyExtension())
+```
+
+## 扩展生命周期钩子
+
+| 钩子 | 时机 | 用途 |
+| ---- | ---- | ---- |
+| `on_startup(site)` | 站点启动时 | 注册资源目录、初始化 |
+| `transform_source(source, meta)` | 渲染前 | 源码预处理 |
+| `post_render(html, meta)` | 渲染后 | HTML 后处理 |
+| `get_meta()` | 任意时刻 | 读取当前页面元数据 |
+
+## 读取元数据
+
+扩展内可通过 `FrontMatterExtension.get_meta()` 获取当前页面的元数据，
+据此实现自定义行为：
+
+```python
+from mdw.extensions import FrontMatterExtension
+
+meta = FrontMatterExtension.get_meta()   # dict，如 {"title": "...", "order": 1}
+```
+
+## 自定义路由处理器
+
+除扩展外，还可注册任意路径的处理器：
+
+```python
+@site.handler("/api/my-endpoint")
+async def my_endpoint(request):
+    return web.json_response({"hello": "world"})
+```
+
+详见[管理 API](/api/)。

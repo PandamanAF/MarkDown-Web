@@ -1,0 +1,48 @@
+host: 127.0.0.1
+port: 8080
+docs_dir: docs
+static_dir: static
+config_dir: config
+site_title: MDW
+brand: MDW
+admin_prefix: /admin
+auto_reload: true
+debug: false
+variables: {}
+api:
+  enabled: true
+  token: mdw-admin
+extensions:
+  front_matter: true
+  code_highlight: true
+  custom_blocks:
+    enabled: true
+    markers:
+    - ':::'
+    - '[['
+    styles:
+      note:
+        class: mdw-block mdw-note
+      warning:
+        class: mdw-block mdw-warning
+      tip:
+        class: mdw-block mdw-tip
+      important:
+        class: mdw-block mdw-important
+        css: important.css
+      card:
+        html: card.html
+        vars:
+          title: 📇 外部 HTML 模板
+          accent: '#6750a4'
+          radius: 12px
+      page-card:
+        html: page-card.html
+        css: page-card.css
+        vars:
+          title: 前往
+          url: /
+          icon: ''
+          accent: '#6750a4'
+          align: right
+          compact: '1'

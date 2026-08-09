@@ -1,0 +1,9 @@
+# MDW 依赖（可选）
+# aiohttp 提供异步 HTTP 性能提升
+# python-markdown 提供更完整的 Markdown 支持（若注释则使用内置渲染器）
+
+# 可选加速
+aiohttp>=3.9,<4
+
+# 可选增强 Markdown
+# markdown>=3.5

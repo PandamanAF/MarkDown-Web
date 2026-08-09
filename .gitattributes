@@ -1,0 +1,21 @@
+# 统一换行符，避免跨平台（Windows/Linux）diff 混乱
+* text=auto
+
+# 源码与文档统一 LF
+*.py text eol=lf
+*.mdw text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+
+# 二进制不转换
+*.svg binary
+*.png binary
+*.jpg binary
+*.zip binary
+*.exe binary
+*.bin binary

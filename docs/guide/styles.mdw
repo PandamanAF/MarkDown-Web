@@ -1,0 +1,166 @@
+---
+title: 自定义样式
+nav: 🎨 自定义样式
+order: 3
+---
+
+# 自定义样式
+
+MDW 的自定义样式块支持**多种识别字符**与**外部 CSS / HTML 文件**。
+
+## 识别字符（可配置多个）
+
+默认识别字符是 `:::`，也可通过 `markers` 参数启用更多字符，例如 `[[[`：
+
+::: note
+这是 `:::` 识别符的提示块。
+:::
+
+[[[ tip
+这是使用 `[[[` 识别符的提示块。
+[[[
+
+## 引入外部 HTML 模板
+
+样式 `card` 配置了外部 HTML 模板 `_styles/card.html`，块内容会替换模板中的
+`{{content}}` 占位符：
+
+::: card
+卡片内容来自外部 HTML 模板，样式与布局都在模板文件中定义。
+:::
+
+## 样式模板变量（多个、可自定义）
+
+样式模板（HTML / CSS）可声明**多个变量**，变量名与默认值都可自定义。
+
+### 样式级默认变量
+
+在 `styles` 配置中用 `vars` 给出该样式的默认变量：
+
+```python
+"card": {
+    "html": "card.html",
+    "vars": {"title": "📇 外部 HTML 模板", "accent": "#6750a4", "radius": "12px"},
+},
+```
+
+### 文档中可直接识别变量的格式
+
+文档中在样式名后直接写 `key="值"`（多个变量用空格分隔），
+即可覆盖默认值 —— 这是文档中**可直接识别变量的格式**：
+
+::: card title="📇 多变量卡片" accent="#e91e63" radius="8px"
+头部声明的 `title` / `accent` / `radius` 会被注入外部 HTML 模板，
+同时以 `--变量名` CSS 自定义属性的形式注入本块的 `style`。
+:::
+
+::: page-card url="/guide/" title="指南"
+编写指南
+:::
+
+### 模板中的引用方式
+
+- **HTML 模板**：用 `{{ 变量名 }}` 引用（与内容占位符 `{{content}}` 并存）。
+  上例的 `title` 会替换模板中的 `{{title}}`，`accent` 替换 `{{accent}}` 等
+- **CSS 文件**：变量会自动以 `--变量名: 值` 注入块的 `style` 属性，
+  CSS 中用 `var(--变量名)` 引用，例如 `border-radius: var(--radius)`
+
+### 变量优先级
+
+文档块级变量 > 样式默认变量（`vars`）> 站点全局变量（`MDWSite(variables=...)`）。
+
+::: tip
+变量名允许字母、数字、下划线与连字符，值用双引号包裹（可含空格）。
+未被替换的占位符会原样保留在输出中；代码块中的占位符不会被替换。
+:::
+
+## 页面跳转卡片
+
+样式 `page-card` 结合外部 HTML 模板与 CSS 文件，实现文档网站的跳转卡片。
+默认**紧凑模式**（无图标、较小较扁），亮暗主题自动适配；可选参数控制对齐与完整模式：
+
+- `url`：跳转目标（**必填**）
+- `title`：卡片标题（默认 `前往`）
+- `icon`：图标（紧凑模式下默认不显示，设值即恢复）
+- `accent`：强调色
+- `align`：左/中/右对齐（`left` / `center` / `right`，默认 `right`）
+- `compact`：紧凑模式（`"1"` 启用，设 `""` 恢复完整卡片含图标）
+
+
+完整模式（指定 icon 且关闭紧凑）：
+
+::: page-card url="/guide/" title="前往指南" icon="📚" accent="#4f378b" compact=""
+了解 MDW 的完整功能：自定义样式、元数据、模板与进阶用法。
+:::
+
+紧凑模式（默认，无图标、更扁）：
+
+::: page-card url="/guide/" title="指南"
+编写指南
+:::
+
+配置方式（HTML 模板 + CSS 文件 + 默认变量）：
+
+```python
+"page-card": {"html": "page-card.html", "css": "page-card.css",
+              "vars": {"title": "前往", "url": "/", "icon": "",
+                       "accent": "#6750a4", "align": "right", "compact": "1"}},
+```
+
+块内容作为卡片描述，建议使用简短一行文字或行内 Markdown。
+
+### 一行并排多张卡片
+
+连续书写多个 `page-card` 块（**块之间不留空行**），即可自动并排为网格：
+桌面端一行最多 4 张，窗口变窄时自动降为 2 列 / 1 列。
+紧凑模式卡片在网格中更显整洁：
+
+::: page-card url="/guide/" title="入门指南" icon="🚀"
+快速上手
+:::
+::: page-card url="/guide/styles" title="自定义样式" icon="🎨"
+样式与模板
+:::
+::: page-card url="/guide/metadata" title="元数据" icon="📌"
+导航与元数据
+:::
+::: page-card url="/guide/templates" title="模板系统" icon="🧩"
+页面模板
+:::
+
+> 并排由前端自动完成：渲染后相邻的 `page-card` 块会被收进网格容器，
+> 无需额外语法；单独一张卡片仍为单列展示。
+
+## 引入外部 CSS 文件
+
+样式 `important` 配置了外部 CSS 文件 `_styles/important.css`，页面会自动在
+`<head>` 中引入该文件（通过 `/_styles/important.css` 提供）：
+
+::: important
+这个块的样式完全来自外部 CSS 文件。
+:::
+
+## 配置示例
+
+```python
+site.use(CustomBlockExtension(
+    markers=(":::", "[["),
+    styles={
+        "note":      {"class": "mdw-block mdw-note"},
+        "card":      {"html": "card.html",
+                      "vars": {"title": "📇 外部 HTML 模板", "accent": "#6750a4"}},
+        "important": {"class": "mdw-block mdw-important", "css": "important.css"},
+    },
+))
+```
+
+- `class`：最终渲染的 CSS 类（默认 `mdw-block mdw-<样式名>`）
+- `css`：外部 CSS 文件；`http(s)://` 开头视为完整 URL，否则是样式目录
+  （默认 `docs/_styles/`）下的相对路径
+- `html`：外部 HTML 模板；`{{content}}` 为内容占位符，没有占位符时块内容
+  追加在模板之后
+- `vars`：样式的默认模板变量（可多个），文档中可用 `样式名 key="值"` 覆盖
+
+::: warning
+代码块中的识别字符会被自动保护，不会被误识别为自定义样式。
+:::

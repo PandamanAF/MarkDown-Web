@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# 构建产物（Nuitka）
+dist/
+dist-*/
+build_cache/
+*.build/
+*.dist/
+*.onefile-build/
+*.exe
+*.bin
+nuitka-crash-report.xml
+
+# 构建期自动生成的内置资源包（build.py --bundle 重新生成）
+mdw/_bundle_assets.py
+
+# 发布打包
+MDW-*.zip
+
+# 工具/IDE 数据
+.workbuddy/
+.idea/
+.vscode/
+*.swp
+
+# 系统
+.DS_Store
+Thumbs.db

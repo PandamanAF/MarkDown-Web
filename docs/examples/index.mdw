@@ -1,0 +1,33 @@
+---
+title: 示例集
+nav: 🧪 示例集
+order: 2
+---
+
+# 示例集
+
+各功能开箱即用的完整示例，代码片段可直接复制到自己的文档中使用。
+
+::: page-card url="/examples/basic" title="🧱 基础用法" icon="📄" compact=""
+最简文档长什么样。
+:::
+
+::: page-card url="/examples/customization" title="🎛️ 自定义与注入变量" icon="⚙️" compact=""
+站点标题、注入变量、动态 CSS。
+:::
+
+::: page-card url="/examples/media" title="🖼️ 媒体资源" icon="🎬" compact=""
+图片、视频、音频与静态资源挂载。
+:::
+
+::: page-card url="/examples/sidebar-meta" title="🧭 侧边栏元数据" icon="📌" compact=""
+nav / order / hidden 定制侧边栏。
+:::
+
+::: page-card url="/examples/deep" title="🕳️ 深层页面" icon="🌳" compact=""
+多层嵌套目录与导航递归。
+:::
+
+::: note
+示例文档本身即 MDW 语法的活教材 —— 查看源码即可学习各种写法。
+:::

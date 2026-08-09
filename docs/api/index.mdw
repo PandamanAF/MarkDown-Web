@@ -1,0 +1,29 @@
+---
+title: 管理 API
+nav: 🤖 管理 API
+order: 3
+---
+
+# 管理 API
+
+MDW 内置一套 HTTP 管理接口，前缀 `/api/`，使用 Bearer Token 鉴权。
+可用于路由列表、页面渲染、文档上传下载、热重载等管理操作。
+
+::: page-card url="/api/reference" title="📄 API 参考" icon="🔌"
+完整端点、请求/响应格式与 curl / Python 通用示例。
+:::
+
+## 快速速览
+
+| 方法 | 路径 | 说明 |
+| ---- | ---- | ---- |
+| GET | `/api/routes` | 路由列表 |
+| GET | `/api/status` | 服务器状态 |
+| GET | `/api/page/{path}` | 页面渲染 HTML（空路径 = 首页） |
+| GET | `/api/source/{path}` | 下载原始文档文件 |
+| POST | `/api/reload` | 触发热重载 |
+| POST | `/api/upload` | 上传文档（multipart / JSON） |
+| DELETE | `/api/page/{path}` | 删除文档（空目录自动清理） |
+
+鉴权：`Authorization: Bearer <token>` 或 `?token=<token>`。
+Token 在 `config/site.yaml` 的 `api.token` 配置。

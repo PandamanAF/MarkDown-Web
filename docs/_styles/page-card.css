@@ -1,0 +1,125 @@
+/* 页面跳转卡片 —— Material Design 3 风格
+   变量（url / title / icon / accent / align / compact）由引擎注入，
+   支持可选参数：align（left|center|right，默认 right）、
+                  compact（"1"=紧凑模式，仅去掉图标，尺寸不变）。
+   连续多个 page-card 块无空行相邻时，由前端自动分组为网格，桌面一行最多 4 张，
+   窄屏最小保持两列。 */
+
+/* ── 父容器：完全从布局中"消失"（display:contents），
+   确保不会产生任何阴影、边框、背景，也不参与盒子模型 ── */
+.mdw-block.mdw-page-card {
+  display: contents;
+}
+
+/* ── 卡片本体 ── */
+.mdw-page-card {
+  --mdw-accent: var(--accent, #6750a4);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: fit-content;
+  max-width: 600px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: #f3edf7;
+  color: #1c1b1f;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+/* ── 对齐 ── */
+.mdw-page-card[data-align="left"]   { margin-left: 0;   margin-right: auto; }
+.mdw-page-card[data-align="center"] { margin-left: auto; margin-right: auto; }
+.mdw-page-card[data-align="right"]  { margin-left: auto; margin-right: 0;   }
+
+/* ── 紧凑模式：仅去掉图标，尺寸与完整卡片一致 ── */
+.mdw-page-card[data-compact="1"] .mdw-page-card-icon { display: none; }
+
+/* ── 整卡可点：透明覆盖层 ── */
+.mdw-page-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* ── 图标：accent tonal 圆形底 ── */
+.mdw-page-card-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mdw-accent) 16%, transparent);
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ── 文本区 ── */
+.mdw-page-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  z-index: 0;
+}
+.mdw-page-card-title { font-size: 15px; font-weight: 600; line-height: 1.4; color: #1c1b1f; }
+.mdw-page-card-desc  { font-size: 13px; line-height: 1.5; color: #49454f; overflow-wrap: anywhere; }
+.mdw-page-card-desc:empty { display: none; }
+
+/* ── 箭头 ── */
+.mdw-page-card-arrow {
+  flex: none;
+  margin-left: auto;
+  z-index: 0;
+  font-size: 18px;
+  color: var(--mdw-accent);
+  transition: transform 0.2s ease;
+}
+
+/* ── 悬停：仅加深阴影（不抬起，避免父容器出现抬起错觉） ── */
+@media (hover: hover) {
+  .mdw-page-card:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+  .mdw-page-card:hover .mdw-page-card-arrow { transform: translateX(3px); }
+}
+
+/* 键盘焦点 */
+.mdw-page-card:focus-within {
+  outline: 2px solid var(--mdw-accent);
+  outline-offset: 2px;
+}
+
+/* ── 并排网格 ── */
+.mdw-page-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 1em 0;
+  background: transparent;
+  box-shadow: none;
+}
+/* 网格内每个 .mdw-block 容器也用 display:contents */
+.mdw-page-card-grid .mdw-block.mdw-page-card { display: contents; }
+.mdw-page-card-grid .mdw-page-card {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;                              /* 网格内不应用 align */
+}
+
+/* ── 深色模式 ── */
+@media (prefers-color-scheme: dark) {
+  .mdw-page-card { background: #211f26; color: #e6e1e5; }
+  .mdw-page-card-title { color: #e6e1e5; }
+  .mdw-page-card-desc { color: #cac4d0; }
+}
+
+/* ── 响应式列数：4 → 2（最小保持两列） ── */
+@media (max-width: 1100px) {
+  .mdw-page-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
