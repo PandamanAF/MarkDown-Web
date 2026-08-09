@@ -116,6 +116,16 @@ python -m nuitka --standalone --onefile --output-dir=dist \
 
 启动后访问站点即在线阅读，侧边栏自动生成导航树。
 
+## 相关项目
+
+- 📱 **[MDW-Manager](https://github.com/xuexi-meow/MDW-Manager)** — 多平台 MDW 管理器（Android / 桌面端），可视化管理文档、上传下载、远程控制
+
+## 支持
+
+如果 MDW 对你有帮助，欢迎打赏支持：
+
+![打赏二维码](打赏二维码.png)
+
 *ps:本项目由deepseek-v4辅助完成*
 
 ## 许可
