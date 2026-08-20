@@ -1,27 +1,27 @@
 # MDW — Markdown Website Framework
 
-A lightweight Markdown documentation site building framework：把 `docs/` 目录下的 `.md` / `.mdw` 文件直接渲染为响应式网站，内置导航树、主题定制、管理后台与管理 API。
+A lightweight Markdown documentation site framework: renders `.md` / `.mdw` files from the `docs/` directory directly into a responsive website, with built-in navigation tree, theme customization, admin panel, and management API.
 
-## 特性
+## Features
 
-- 📝 **类 Markdown 语法** — 支持 `.mdw` / `.md`，扩展自定义块（提示框、卡片、外部模板）
-- 📂 **自动路由** — 文档目录层级即 URL 结构，嵌套无上限
-- 🧭 **元数据驱动导航** — `title` / `nav` / `parent` / `order` / `hidden` 等字段定制侧边栏
-- 🎨 **主题定制** — `static/style.css` + `static/app.js` 可自由修改，支持暗色模式
-- 🔌 **扩展系统** — Parser / Renderer / Middleware / 自定义处理器
-- 🔄 **热重载** — 保存文档即刷新页面（开发模式）
-- ⚙️ **管理后台** — `/admin` 页面查看路由与文件
-- 🤖 **管理 API** — `/api/*` 提供路由列表、页面渲染、文件上传下载、热重载等接口（Bearer Token 鉴权）
+- 📝 **Markdown-like syntax** — Supports `.mdw` / `.md`, with extended custom blocks (alerts, cards, external templates)
+- 📂 **Automatic routing** — Document directory hierarchy maps to URL structure, with unlimited nesting
+- 🧭 **Metadata-driven navigation** — Use `title` / `nav` / `parent` / `order` / `hidden` fields to customize the sidebar
+- 🎨 **Theme customization** — `static/style.css` + `static/app.js` are freely modifiable, with dark mode support
+- 🔌 **Extension system** — Parser / Renderer / Middleware / custom processors
+- 🔄 **Hot reload** — Save a document and the page refreshes immediately (development mode)
+- ⚙️ **Admin panel** — `/admin` page to view routes and files
+- 🤖 **Management API** — `/api/*` provides route list, page rendering, file upload/download, hot reload, etc. (Bearer Token authentication)
 
-## 快速开始
+## Quick Start
 
 ```bash
 pip install -r requirements.txt
 python app.py
-# 打开 http://127.0.0.1:8080
+# Open http://127.0.0.1:8080
 ```
 
-在 `docs/` 下创建 `.mdw` 文件即生成对应页面：
+Create a .mdw file under docs/ and it becomes a corresponding page:
 
 ```
 docs/
@@ -31,24 +31,24 @@ docs/
     └── styles.mdw     → /guide/styles
 ```
 
-## 目录结构
+## Directory Structure
 
 ```
 MDW/
-├── app.py              # 主入口
-├── build.py            # Nuitka 打包脚本
-├── requirements.txt    # 依赖
+├── app.py              # Main entry point
+├── build.py            # Nuitka packaging script
+├── requirements.txt    # Dependencies
 ├── config/
-│   └── site.yaml       # 站点配置（端口/标题/API Token）
-├── docs/               # 文档源（Markdown/MDW）
-├── static/             # 主题资源（style.css / app.js）
-├── mdw/                # 核心包
-└── dist/               # 编译产物（app.exe / app.bin）
+│   └── site.yaml       # Site configuration (port / title / API Token)
+├── docs/               # Documentation source (Markdown / MDW)
+├── static/             # Theme assets (style.css / app.js)
+├── mdw/                # Core package
+└── dist/               # Build artifacts (app.exe / app.bin)
 ```
 
-## 配置
+## Configuration
 
-`config/site.yaml`（首次运行自动生成）：
+`config/site.yaml`（Auto-generated on first run）：
 
 ```yaml
 host: 0.0.0.0
@@ -59,20 +59,19 @@ admin_prefix: /admin
 auto_reload: true
 api:
   enabled: true
-  token: mdw-admin        # 管理 API 鉴权 Token，请修改
+  token: mdw-admin        # Management API auth token, please change this
 ```
 
-## 管理 API
+## Management API
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/api/routes` | 路由列表 |
-| GET | `/api/status` | 服务器状态 |
-| GET | `/api/page/{path}` | 页面渲染 HTML（空路径=首页） |
-| GET | `/api/source/{path}` | 下载原始文档文件（.md/.mdw） |
-| POST | `/api/reload` | 触发热重载 |
-| POST | `/api/upload` | 上传文档（multipart 或 JSON） |
-| DELETE | `/api/page/{path}` | 删除文档（空目录自动级联清理） |
+| Method | Path | Description |
+|GET|/api/routes|Route list|
+GET /api/status Server status
+GET /api/page/{path} Rendered page HTML (empty path = homepage)
+GET /api/source/{path} Download raw documentation file (.md / .mdw)
+POST /api/reload Trigger hot reload
+POST /api/upload Upload documentation (multipart or JSON)
+DELETE /api/page/{path} Delete a document (empty directories are cleaned up cascadingly)
 
 鉴权：`Authorization: Bearer <token>` 或 `?token=<token>`。
 
