@@ -65,27 +65,27 @@ api:
 ## Management API
 
 | Method | Path | Description |
-|GET|/api/routes|Route list|
-GET /api/status Server status
-GET /api/page/{path} Rendered page HTML (empty path = homepage)
-GET /api/source/{path} Download raw documentation file (.md / .mdw)
-POST /api/reload Trigger hot reload
-POST /api/upload Upload documentation (multipart or JSON)
-DELETE /api/page/{path} Delete a document (empty directories are cleaned up cascadingly)
+|------|------|------|
+| GET | `/api/routes` | Route List |
+| GET | `/api/status` | Server Status |
+| GET | `/api/page/{path}` | Rendered page HTML (empty path = homepage) |
+| GET | `/api/source/{path}` | Download raw documentation file (.md / .mdw) |
+| POST | `/api/reload` | Trigger hot reload |
+| POST | `/api/upload` | Upload documentation (multipart or JSON) |
+| DELETE | `/api/page/{path}` | Delete a document (empty directories are cleaned up cascadingly) |
 
-鉴权：`Authorization: Bearer <token>` 或 `?token=<token>`。
+Authentication: `Authorization: Bearer <token>` or `?token=<token>`.
 
-完整参考见 `docs/api/reference.mdw`（含 curl / Python 通用示例）。
+Full reference available at `docs/api/reference.mdw` (includes curl / Python examples).
 
-## 编译可执行文件
+## Build Executable
 
 依赖：Nuitka + 对应平台编译器（Windows: MSVC / Linux: gcc+patchelf）。
 
-编译前会自动把 `docs/`（教程）、`static/`（主题）、默认 `config/` 打包进二进制
-（`python build.py --bundle` 或编译时自动执行），生成 `mdw/_bundle_assets.py`。
+Before compilation, `docs/` (tutorial), `static/` (theme), and the default `config/` are automatically bundled into the binary (`python build.py --bundle` or automatically during compilation), generating `mdw/_bundle_assets.py`.
 
 ```bash
-# Windows（产出 dist/app.exe，单文件，zstd 压缩）
+# Windows (produces dist/app.exe, standalone single file, zstd compressed)
 python -m nuitka --standalone --onefile --windows-console-mode=force \
   --output-dir=dist \
   --include-data-dir=mdw/templates=mdw/templates \
@@ -93,7 +93,7 @@ python -m nuitka --standalone --onefile --windows-console-mode=force \
   --include-package=pygments.formatters --include-package=pygments.styles \
   --include-package=yaml --assume-yes-for-downloads app.py
 
-# Linux（产出 dist/app.bin；在 Linux 环境/容器中执行）
+# Linux (produces dist/app.bin; run inside a Linux environment/container)
 python -m nuitka --standalone --onefile --output-dir=dist \
   --include-data-dir=mdw/templates=mdw/templates \
   --include-package=pygments --include-package=pygments.lexers \
@@ -101,32 +101,30 @@ python -m nuitka --standalone --onefile --output-dir=dist \
   --include-package=yaml --assume-yes-for-downloads app.py
 ```
 
-运行编译产物：直接执行 `app` / `app.exe` 即可。**无需手动准备任何文件**——
-首次运行会自动把内置的 `docs/`（教程文档）、`static/`（主题样式）和默认
-`config/site.yaml` 解压到程序同目录；用户已有内容不会被覆盖。
+To run the built artifact: execute `app` / `app.exe` directly. **No manual file preparation is required** — on first run, the built-in `docs/` (tutorial), `static/` (theme), and default `config/site.yaml` are extracted to the program's directory; existing user files are not overwritten.
 
-## 文档
+## Documentation
 
-站点内置完整教程（`docs/`）：
+The site includes a complete tutorial (`docs/`):
 
-- `docs/guide/` — 📖 编写指南：快速开始、语法基础、元数据、样式、模板、扩展、部署
-- `docs/examples/` — 🧪 示例集：各功能开箱即用的完整示例
-- `docs/api/` — 🤖 管理 API：接口参考与通用客户端示例
+· `docs/guide/` — 📖 Writing Guide: quick start, syntax basics, metadata, styling, templates, extensions, deployment
+· `docs/examples/` — 🧪 Examples: ready-to-use complete examples for all features
+· `docs/api/` — 🤖 Management API: interface reference and generic client examples
 
-启动后访问站点即在线阅读，侧边栏自动生成导航树。
+After starting the site, access it online and read directly; the sidebar auto-generates the navigation tree.
 
-## 相关项目
+## Related Project
 
-- 📱 **[MDW-Manager](https://github.com/xuexi-meow/MDW-Manager)** — 多平台 MDW 管理器（Android / 桌面端），可视化管理文档、上传下载、远程控制
+- 📱 **[MDW-Manager](https://github.com/xuexi-meow/MDW-Manager)** — Multi-platform MDW manager (Android / Desktop), visual document management, upload/download, remote control
 
-## 支持
+## Support
 
-如果 MDW 对你有帮助，欢迎打赏支持：
+If MDW helps you, feel free to buy us a coffee:
 
-![打赏二维码](打赏二维码.png)
+![Support QR-WeChat](打赏二维码.png)
 
-*ps:本项目由deepseek-v4辅助完成*
+*ps:This project is assisted by deepseek-v4*
 
-## 许可
+## License
 
 MIT
