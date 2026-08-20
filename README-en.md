@@ -1,7 +1,7 @@
 # MDW — Markdown Website Framework
 
 A lightweight Markdown documentation site framework: renders `.md` / `.mdw` files from the `docs/` directory directly into a responsive website, with built-in navigation tree, theme customization, admin panel, and management API.
-
+<kbd>[简体中文](README.md)</kbd> <kbd>English</kbd>
 ## Features
 
 - 📝 **Markdown-like syntax** — Supports `.mdw` / `.md`, with extended custom blocks (alerts, cards, external templates)
